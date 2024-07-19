@@ -1,8 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from app.config import Config 
 
-SQLALCHEMY_DATABASE_URL = "Server=tcp:travelixdb.database.windows.net,1433;Initial Catalog=API_information;Persist Security Info=False;User ID=a_travelix;Password=adminT2024;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+
+SQLALCHEMY_DATABASE_URL = (
+    "mssql+pyodbc://a_travelix:adminT2024@travelixdb.database.windows.net:1433/userflight?driver=ODBC+Driver+17+for+SQL+Server"
+)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
