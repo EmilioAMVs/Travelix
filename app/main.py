@@ -1,5 +1,9 @@
 from fastapi import FastAPI
-from app.APIs.routes import user_routes, itinerary_routes, activity_routes, flight_routes, message_routes
+from app.APIs.routes.user_routes import router as user_routes
+from app.APIs.routes.itinerary_routes import router as itinerary_routes
+from app.APIs.routes.activity_routes import router as activity_routes
+from app.APIs.routes.flight_routes import router as flight_routes
+from app.APIs.routes.message_routes import router as message_routes
 
 app = FastAPI()
 
