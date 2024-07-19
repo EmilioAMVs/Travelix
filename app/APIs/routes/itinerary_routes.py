@@ -1,19 +1,23 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from crud import itinerary as crud_itinerary
+from schemas import itinerary as schemas_itinerary
+from db.connection import get_db
 
 router = APIRouter()
 
-class Itinerary(BaseModel):
-    id: int
-    name: str
-    details: str
+@router.post("/itineraries/", response_model=schemas_itinerary.Itinerary)
+def create_itinerary(itinerary: schemas_itinerary.ItineraryCreate, db: Session = Depends(get_db)):
+    return crud_itinerary.create_itinerary(db=db, itinerary=itinerary)
 
-@router.get("/", response_model=list[Itinerary])
-def get_itineraries():
-    # Reemplaza con la llamada real a la base de datos
-    return [{"id": 1, "name": "Summer Trip", "details": "A trip to the beach."}]
+@router.get("/itineraries/", response_model=List[schemas_itinerary.Itinerary])
+def read_itineraries(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    itineraries = crud_itinerary.get_itineraries(db, skip=skip, limit=limit)
+    return itineraries
 
-@router.post("/", response_model=Itinerary)
-def create_itinerary(itinerary: Itinerary):
-    # Reemplaza con la llamada real a la base de datos
-    return itinerary
+@router.get("/itineraries/{itinerary_id}", response_model=schemas_itinerary.Itinerary)
+def read_itinerary(itinerary_id: int, db: Session = Depends(get_db)):
+    db_itinerary = crud_itinerary.get_itinerary(db, itinerary_id=itinerary_id)
+    if db_itinerary is None:
+        raise HTTPException(status_code=404, detail="Itinerary not found")
+    return db_itinerary

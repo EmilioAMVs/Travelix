@@ -1,24 +1,23 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from crud import flight as crud_flight
+from schemas import flight as schemas_flight
+from db.connection import get_db
 
 router = APIRouter()
 
-class Flight(BaseModel):
-    id: int
-    airline: str
-    flight_number: str
-    departure_time: str
-    arrival_time: str
+@router.post("/flights/", response_model=schemas_flight.Flight)
+def create_flight(flight: schemas_flight.FlightCreate, db: Session = Depends(get_db)):
+    return crud_flight.create_flight(db=db, flight=flight)
 
-@router.get("/", response_model=list[Flight])
-def get_flights():
-    # Reemplaza con la llamada real a la base de datos
-    return [
-        {"id": 1, "airline": "Airline A", "flight_number": "AA123", "departure_time": "2024-07-15T10:00:00", "arrival_time": "2024-07-15T12:00:00"},
-        {"id": 2, "airline": "Airline B", "flight_number": "BB456", "departure_time": "2024-07-15T14:00:00", "arrival_time": "2024-07-15T16:00:00"}
-    ]
+@router.get("/flights/", response_model=List[schemas_flight.Flight])
+def read_flights(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    flights = crud_flight.get_flights(db, skip=skip, limit=limit)
+    return flights
 
-@router.post("/", response_model=Flight)
-def create_flight(flight: Flight):
-    # Reemplaza con la llamada real a la base de datos
-    return flight
+@router.get("/flights/{flight_id}", response_model=schemas_flight.Flight)
+def read_flight(flight_id: int, db: Session = Depends(get_db)):
+    db_flight = crud_flight.get_flight(db, flight_id=flight_id)
+    if db_flight is None:
+        raise HTTPException(status_code=404, detail="Flight not found")
+    return db_flight
