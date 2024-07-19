@@ -1,25 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travelix</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>Travelix API CRUD</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a Travelix</h1>
-    </header>
-    <main>
-        <section id="user-section">
-            <h2>Usuarios</h2>
-            <ul id="user-list"></ul>
-        </section>
-        <section id="flight-section">
-            <h2>Vuelos</h2>
-            <ul id="flight-list"></ul>
-        </section>
-    </main>
-    <script src="scripts/app.js"></script>
+    <h1>Travelix API CRUD Operations</h1>
+    <div id="content">
+        <h2>Flight Operations</h2>
+        <button onclick="fetchFlights()">Fetch Flights</button>
+        <div id="flights"></div>
+        
+        <h2>Create New Flight</h2>
+        <form id="create-flight-form">
+            <label for="flight_number">Flight Number:</label>
+            <input type="text" id="flight_number" name="flight_number"><br>
+            <label for="departure_date">Departure Date:</label>
+            <input type="datetime-local" id="departure_date" name="departure_date"><br>
+            <label for="destination">Destination:</label>
+            <input type="text" id="destination" name="destination"><br>
+            <button type="submit">Create Flight</button>
+        </form>
+        
+        <script>
+            async function fetchFlights() {
+                const response = await fetch('/flights');
+                const flights = await response.json();
+                const flightsDiv = document.getElementById('flights');
+                flightsDiv.innerHTML = JSON.stringify(flights, null, 2);
+            }
+            
+            document.getElementById('create-flight-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const flight_number = document.getElementById('flight_number').value;
+                const departure_date = document.getElementById('departure_date').value;
+                const destination = document.getElementById('destination').value;
+                
+                const response = await fetch('/flights', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ flight_number, departure_date, destination })
+                });
+                
+                if (response.ok) {
+                    alert('Flight created successfully!');
+                    fetchFlights();
+                } else {
+                    alert('Error creating flight.');
+                }
+            });
+        </script>
+    </div>
 </body>
 </html>

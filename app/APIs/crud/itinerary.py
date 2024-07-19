@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from models.itinerary import Itinerary
-from schemas.itinerary import ItineraryCreate
+from app.models.itinerary import Itinerary
+from app.APIs.schemas.itinerary import ItineraryCreate
 
 def get_itinerary(db: Session, itinerary_id: int):
     return db.query(Itinerary).filter(Itinerary.id == itinerary_id).first()

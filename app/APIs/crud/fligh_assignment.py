@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from models.flight_assignment import FlightAssignment
-from schemas.flight_assignment import FlightAssignmentCreate
+from app.models.flight_assignment import FlightAssignment
+from app.APIs.schemas.flight_assignment import FlightAssignmentCreate
 
 def get_flight_assignment(db: Session, assignment_id: int):
     return db.query(FlightAssignment).filter(FlightAssignment.id == assignment_id).first()

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from models.flight import Flight
-from schemas.flight import FlightCreate
+from app.models.flight import Flight
+from app.APIs.schemas.flight import FlightCreate
 
 def get_flight(db: Session, flight_id: int):
     return db.query(Flight).filter(Flight.id == flight_id).first()

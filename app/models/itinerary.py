@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from APIs.db.connection import Base
+from app.APIs.db.connection import Base
 
 class Itinerary(Base):
     __tablename__ = 'itineraries'

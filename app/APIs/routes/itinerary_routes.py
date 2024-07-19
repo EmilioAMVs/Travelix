@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from crud import itinerary as crud_itinerary
-from schemas import itinerary as schemas_itinerary
-from db.connection import get_db
+from app.APIs.crud import itinerary as crud_itinerary
+from app.APIs.schemas import itinerary as schemas_itinerary
+from app.APIs.db.connection import get_db
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ router = APIRouter()
 def create_itinerary(itinerary: schemas_itinerary.ItineraryCreate, db: Session = Depends(get_db)):
     return crud_itinerary.create_itinerary(db=db, itinerary=itinerary)
 
-@router.get("/itineraries/", response_model=List[schemas_itinerary.Itinerary])
+@router.get("/itineraries/", response_model=list[schemas_itinerary.Itinerary])
 def read_itineraries(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     itineraries = crud_itinerary.get_itineraries(db, skip=skip, limit=limit)
     return itineraries

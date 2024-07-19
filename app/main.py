@@ -1,19 +1,43 @@
 from fastapi import FastAPI
-from app.APIs.routes.user_routes import router as user_routes
-from app.APIs.routes.itinerary_routes import router as itinerary_routes
-from app.APIs.routes.activity_routes import router as activity_routes
-from app.APIs.routes.flight_routes import router as flight_routes
-from app.APIs.routes.message_routes import router as message_routes
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
+
+from app.APIs.routes import activity, flight, flight_assignment, user, user_flight, itinerary, message
+from app.APIs.crud import activity, flight, flight_assignment, user, user_flight, itinerary, message
 
 app = FastAPI()
 
-# Incluye tus rutas
-app.include_router(user_routes, prefix="/users", tags=["Users"])
-app.include_router(itinerary_routes, prefix="/itineraries", tags=["Itineraries"])
-app.include_router(activity_routes, prefix="/activities", tags=["Activities"])
-app.include_router(flight_routes, prefix="/flights", tags=["Flights"])
-app.include_router(message_routes, prefix="/messages", tags=["Messages"])
+# Configuración de CORS
+origins = [
+    "http://localhost",
+    "http://localhost:8000",
+]
 
-@app.get("/")
-def read_root():
-    return {"Welcome to the Travel Platform API"}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Configurar plantillas
+templates = Jinja2Templates(directory="app/templates")
+
+# Incluir rutas de APIs
+app.include_router(activity.router, prefix="/activities", tags=["activities"])
+app.include_router(flight.router, prefix="/flights", tags=["flights"])
+app.include_router(flight_assignment.router, prefix="/flight-assignments", tags=["flight-assignments"])
+app.include_router(user.router, prefix="/users", tags=["users"])
+app.include_router(user_flight.router, prefix="/user-flights", tags=["user-flights"])
+app.include_router(itinerary.router, prefix="/itineraries", tags=["itineraries"])
+app.include_router(message.router, prefix="/messages", tags=["messages"])
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})

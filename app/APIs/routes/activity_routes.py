@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from crud import activity as crud_activity
-from schemas import activity as schemas_activity
-from db.connection import get_db
+from app.APIs.crud import activity as crud_activity
+from app.APIs.schemas import activity as schemas_activity
+from app.APIs.db.connection import get_db
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ router = APIRouter()
 def create_activity(activity: schemas_activity.ActivityCreate, db: Session = Depends(get_db)):
     return crud_activity.create_activity(db=db, activity=activity)
 
-@router.get("/activities/", response_model=List[schemas_activity.Activity])
+@router.get("/activities/", response_model=list[schemas_activity.Activity])
 def read_activities(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     activities = crud_activity.get_activities(db, skip=skip, limit=limit)
     return activities

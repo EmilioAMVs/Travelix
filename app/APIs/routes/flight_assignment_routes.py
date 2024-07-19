@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from crud import flight_assignment as crud_flight_assignment
-from schemas import flight_assignment as schemas_flight_assignment
-from db.connection import get_db
+from app.APIs.crud import flight_assignment as crud_flight_assignment
+from app.APIs.schemas import flight_assignment as schemas_flight_assignment
+from app.APIs.db.connection import get_db
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ router = APIRouter()
 def create_flight_assignment(flight_assignment: schemas_flight_assignment.FlightAssignmentCreate, db: Session = Depends(get_db)):
     return crud_flight_assignment.create_flight_assignment(db=db, flight_assignment=flight_assignment)
 
-@router.get("/flight_assignments/", response_model=List[schemas_flight_assignment.FlightAssignment])
+@router.get("/flight_assignments/", response_model=list[schemas_flight_assignment.FlightAssignment])
 def read_flight_assignments(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     flight_assignments = crud_flight_assignment.get_flight_assignments(db, skip=skip, limit=limit)
     return flight_assignments
